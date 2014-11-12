@@ -4,6 +4,8 @@
 *
 */
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 import factories.ArrayOfCharsFactory;
 import factories.PopulationFactory;
 import gastrategyfactory.CharsArrayKnownSolutionGA;
@@ -21,19 +23,37 @@ public class GenAlgRunner {
   private static final char[] GOAL = {'1', '4', '2','5','0','1','3','6'};
   // Set of valid values for an allel
   private static final char[] alphabet = {'0','1','2','3','4','5','6','7','8','9'};
-  
+    
   /**
    * Example Client code
    * @param args the command line arguments - all are ignored
    */
-  public static void main(String[] args) {    
-    // Number of 'Chromosomes' on the population
-    int populationSize = 100;
+  public static void main(String[] args) {        
     // Length of a Student number code
     int codeLength = GOAL.length;
-    // When it is desired to stop evolving
-    double tolerance = 1.0;
-    int generationLimit = 100;
+    
+    // command line parameters
+    GenAlgParams gaParams = new GenAlgParams();
+    try {
+      // parses the parameters
+      JCommander jcommander = new JCommander(gaParams,args);
+      
+      // if the help flag was set it prints the help and finishes
+      if (gaParams.isHelp()) {
+        jcommander.setProgramName("GenAlgRunner");
+        jcommander.usage();
+        System.exit(0);
+      }
+    } catch (ParameterException e) {
+      // if a given parameter is invalid it alerts the user and finishes
+      System.out.println(e.getMessage());
+      System.exit(-1);
+    }
+  
+    // copies locally the value of the parameters
+    double tolerance = gaParams.getTolerance();
+    int populationSize = gaParams.getPopulationSize();
+    int generationLimit = gaParams.getGenerationLimit();
     
     // Factory that knows how to create Chromosomes for the problem
     PopulationFactory pf = new ArrayOfCharsFactory(alphabet, codeLength);
@@ -56,6 +76,7 @@ public class GenAlgRunner {
     // Evolves until the tolerance criteria is met
     int i = 0;
     double currentFitness = ga.evaluatePopulation(population);
+    
     while (currentFitness < tolerance && i < generationLimit){
       // 3. Selection
       population = ga.selectChromosomes(population);
