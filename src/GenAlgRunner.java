@@ -56,7 +56,7 @@ public class GenAlgRunner {
     int generationLimit = gaParams.getGenerationLimit();
     
     // Factory that knows how to create Chromosomes for the problem
-    PopulationFactory pf = new ArrayOfCharsFactory(alphabet, codeLength);
+    PopulationFactory<char[]> pf = new ArrayOfCharsFactory(alphabet, codeLength);
     
     // Desired behaviour
     String selectionBehaviour = "tournament";
@@ -64,7 +64,7 @@ public class GenAlgRunner {
     String mutationBehaviour = "add"; //Inversion has also been implemented
     
     // Creates the Genetic Algorithm
-    GeneticAlgorithm ga = new CharsArrayKnownSolutionGA(selectionBehaviour, crossoverBehaviour, mutationBehaviour, pf, GOAL);
+    GeneticAlgorithm<char[]> ga = new CharsArrayKnownSolutionGA(selectionBehaviour, crossoverBehaviour, mutationBehaviour, pf, GOAL);
     
     // 1. Initialization - Fill the population with new chromosomes  
     List<char[]> population = ga.initiatePopulation(populationSize);
@@ -89,7 +89,7 @@ public class GenAlgRunner {
       
       // Evaluates the new population
       currentFitness = ga.evaluatePopulation(population);
-      char [] bestIndividual = (char[]) ga.getBestChromosome(population);
+      char [] bestIndividual = ga.getBestChromosome(population);
       System.out.println("Iteration #"+(++i) + "\n The fittest chromosome is: "
               + Arrays.toString(bestIndividual) + " with a fitness value of " +
               currentFitness);
